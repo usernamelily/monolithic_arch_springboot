@@ -55,4 +55,8 @@ public class AccountApplicationService {
         repository.save(account);
     }
 
+    public void deleteAccountByUsername(String username) {
+        Account account = repository.findByUsername(username);
+        repository.delete(account);
+    }
 }

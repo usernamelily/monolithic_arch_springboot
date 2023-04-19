@@ -23,12 +23,14 @@ import com.github.fenixsoft.bookstore.domain.account.Account;
 import com.github.fenixsoft.bookstore.domain.account.validation.AuthenticatedAccount;
 import com.github.fenixsoft.bookstore.domain.account.validation.NotConflictAccount;
 import com.github.fenixsoft.bookstore.domain.account.validation.UniqueAccount;
+import com.github.fenixsoft.bookstore.domain.auth.Role;
 import com.github.fenixsoft.bookstore.infrastructure.jaxrs.CommonResponse;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -79,5 +81,16 @@ public class AccountResource {
     @CacheEvict(key = "#user.username")
     public Response updateUser(@Valid @AuthenticatedAccount @NotConflictAccount Account user) {
         return CommonResponse.op(() -> service.updateAccount(user));
+    }
+
+    /**
+     * 根据用户名称删除用户
+     */
+    @DELETE
+    @Path("/{username}")
+    @CacheEvict(key = "#username")
+    @RolesAllowed(Role.ADMIN)
+    public Response deleteUser(@PathParam("username") String username) {
+        return CommonResponse.op(() -> service.deleteAccountByUsername(username));
     }
 }
